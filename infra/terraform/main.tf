@@ -15,6 +15,12 @@ resource "aws_subnet" "public" {
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = false
 }
+resource "aws_subnet" "public" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = "10.0.1.0/24"
+
+  map_public_ip_on_launch = false
+}
 
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
@@ -44,7 +50,7 @@ resource "aws_security_group" "web" {
   }
 
   ingress {
-    description = "Flask/ HTTP from my IP"
+    description = "Flask app from my IP"
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
@@ -59,6 +65,7 @@ resource "aws_security_group" "web" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 resource "aws_iam_role" "ec2_role" {
   name = "ec2-basic-role"
 
@@ -83,7 +90,6 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 }
 
 resource "aws_instance" "web" {
-  # Ubuntu 22.04 LTS us-west-1
   ami = "ami-0d3f444bc76de0a79"
   instance_type = var.instance_type
   subnet_id     = aws_subnet.public.id
@@ -92,7 +98,7 @@ resource "aws_instance" "web" {
 
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
 
-  monitoring = true # detailed monitoring
+  monitoring = true
 
   ebs_optimized = true
 
@@ -102,25 +108,19 @@ resource "aws_instance" "web" {
 
   metadata_options {
     http_endpoint = "enabled"
-    http_tokens   = "required"    # for IMDSv2 only
+    http_tokens   = "required"
   }
 
   user_data = <<EOF
-  #!/bin/bash
-  set -eux
+#!/bin/bash
+yum update -y
+yum install -y docker git python3
+systemctl enable docker
+systemctl start docker
 
-  # Install dependencies
-  apt-get update -y
-  apt-get install -y python3 python3-pip git
-
-  # Clone the repo
-  git clone https://github.com/t-will-gillis.git /opt/app
-  cd /opt/app/app
-
-  # Install Python deps
-  pip3 install flask
-
-  # Run Flask in background
-  nohup python3 app.py > /var/log/flask.log 2>&1 &
-  EOF
+git clone https://github.com/${var.github_username}/${var.github_repo}.git
+cd ${var.github_repo}/app
+docker build -t flask-app .
+docker run -d -p 8080:8080 flask-app
+EOF
 }
