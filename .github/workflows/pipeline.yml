@@ -3,7 +3,8 @@ name: AWS Terraform Demo CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - master
+  workflow_dispatch:
 
 jobs:
   security-scan:
