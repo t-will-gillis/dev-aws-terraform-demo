@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-2"
+  region = "us-west-1"
 }
 
 resource "aws_vpc" "main" {
@@ -56,7 +56,7 @@ resource "aws_security_group" "web" {
 }
 
 resource "aws_instance" "web" {
-  ami           = "ami-0c2b8ca1dad447f8a" # Amazon Linux 2 (us-west-2)
+  ami           = "ami-0c2b8ca1dad447f8a" # Amazon Linux 2 (us-west-1)
   instance_type = "t3.micro"
   subnet_id     = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.web.id]
