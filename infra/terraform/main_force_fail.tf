@@ -49,6 +49,13 @@ resource "aws_security_group" "web" {
     cidr_blocks = [var.local_source_ip]
   }
 
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]       # This should cause a flag from the policy
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
