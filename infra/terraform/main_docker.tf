@@ -38,7 +38,7 @@ resource "aws_security_group" "web" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.local_source_ip]
+    cidr_blocks = ["var.local_source_ip/32"]
   }
 
   # Flask app port
@@ -46,7 +46,7 @@ resource "aws_security_group" "web" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = [var.local_source_ip]
+    cidr_blocks = ["var.local_source_ip/32"]
   }
 
   ingress {
@@ -65,28 +65,24 @@ resource "aws_security_group" "web" {
 }
 
 resource "aws_instance" "web" {
-  # Ubuntu 22.04 LTS us-west-1
-  ami = "ami-0d3f444bc76de0a79"
-  instance_type = var.instance_type
+  ami = "ami-0d3f444bc76de0a79"       # Ubuntu 22.04 LTS us-west-1
+  instance_type = "t3.micro"
   subnet_id     = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.web.id]
 
   user_data = <<EOF
   #!/bin/bash
-  set -eux
-
-  # Install dependencies
+  sudo usermod -aG docker ubuntu
   apt-get update -y
-  apt-get install -y python3 python3-pip git
+  apt-get install -y docker.io git
+  systemctl enable docker
+  systemctl start docker
 
-  # Clone the repo
-  git clone https://github.com/t-will-gillis.git /opt/app
-  cd /opt/app/app
-
-  # Install Python deps
-  pip3 install flask
-
-  # Run Flask in background
-  nohup python3 app.py > /var/log/flask.log 2>&1 &
+  # Pull repo and run app
+  cd /home/ec2-user
+  git clone https://github.com/t-will-gillis/dev-aws-terraform-demo.git
+  cd dev-aws-terraform-demo/app
+  docker build -t devsecops-demo .
+  docker run -d -p 80:80 devsecops-demo
   EOF
 }
