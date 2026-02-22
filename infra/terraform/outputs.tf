@@ -1,3 +1,7 @@
-output "ec2_public_ip" {
+output "public_ip" {
   value = aws_instance.web.public_ip
+}
+
+output "url" {
+  value = "http://${aws_instance.web.public_ip}:8080"
 }
