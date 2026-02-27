@@ -14,7 +14,12 @@ provider "aws" {
 }
 
 resource "aws_vpc" "main" {
+  #checkov:skip=CKV2_AWS_11:VPC flow logging not required for demo
   cidr_block = "10.0.0.0/16"
+}
+
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.main.id
 }
 
 resource "aws_internet_gateway" "gw" {
@@ -22,6 +27,7 @@ resource "aws_internet_gateway" "gw" {
 }
 
 resource "aws_subnet" "public" {
+  #checkov:skip=CKV_AWS_130:Public subnet required for demo accessibility
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
@@ -120,6 +126,7 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "web" {
+  #checkov:skip=CKV_AWS_88:Public IP required for demo accessibility
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.public.id
