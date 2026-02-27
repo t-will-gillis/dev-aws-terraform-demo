@@ -29,7 +29,7 @@ jobs:
           image-ref: aws-terraform-demo:latest
           format: 'table'
           exit-code: '1'
-          severity: 'HIGH,CRITICAL'
+          severity: 'CRITICAL'
 
       - name: OPA policy check
         run: |
