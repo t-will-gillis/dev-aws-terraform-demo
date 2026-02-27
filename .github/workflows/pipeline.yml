@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Run Terraform scan with Checkov
-        uses: bridgecrewio/checkov-action@master
+        uses: bridgecrewio/checkov-action@v12
         with:
           directory: './infra/terraform'
           framework: 'terraform'
@@ -24,7 +24,7 @@ jobs:
           docker build -t aws-terraform-demo:latest -f app/Dockerfile .
 
       - name: Run security scan with Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.34.0
         with:
           image-ref: aws-terraform-demo:latest
           format: 'table'
@@ -33,26 +33,28 @@ jobs:
 
       - name: OPA policy check
         run: |
-          curl -L -o conftest https://github.com/open-policy-agent/conftest/releases/download/v0.47.0/conftest_Linux_x86_64.tar.gz
-          tar xzf conftest*.tar.gz
-          ./conftest test infra/terraform
+          curl -L -o conftest.tar.gz https://github.com/open-policy-agent/conftest/releases/download/v0.60.0/conftest_Linux_x86_64.tar.gz
+          tar xzf conftest.tar.gz
+          ./conftest test --policy security/policies infra/terraform
 
   deploy:
     needs: security-scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
       - name: Deploy with Terraform
+        env:
+          TF_VAR_local_source_ip: ${{ secrets.LOCAL_SOURCE_IP }}
         run: |
           cd infra/terraform
-          terraform init
+          terraform init -upgrade
           terraform apply -auto-approve
