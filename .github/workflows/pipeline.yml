@@ -21,7 +21,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t aws-terraform-demo:latest -f app/Dockerfile .
+          docker build -t aws-terraform-demo:latest -f app/Dockerfile app/
 
       - name: Run security scan with Trivy
         uses: aquasecurity/trivy-action@0.34.0
