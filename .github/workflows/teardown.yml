@@ -24,7 +24,7 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
+        
       - name: Teardown with Terraform
         env:
           TF_VAR_local_source_ip: ${{ secrets.LOCAL_SOURCE_IP }}
