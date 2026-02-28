@@ -1,12 +1,12 @@
-# AWS Terraform Demo — CI/CD Pipeline
+# AWS Terraform Demo / CI/CD Pipeline
 
-A demonstration project that provisions and deploys a Flask web application to AWS using Terraform, automated through a GitHub Actions CI/CD pipeline with integrated security scanning.
+A demonstration project that provisions and deploys a Flask web app to AWS using Terraform, automated through a GitHub Actions CI/CD pipeline with integrated security scanning.
 
 ## What It Does
 
 On every push to `master` (or manual trigger), the pipeline:
 
-1. **Scans for security issues** before any infrastructure is touched
+1. **Scans for security issues** before any infrastructure is setup
 2. **Provisions AWS infrastructure** via Terraform if all scans pass
 3. **Deploys a Flask application** to the provisioned EC2 instance
 
@@ -15,11 +15,11 @@ A separate teardown workflow destroys all infrastructure on demand.
 ## Pipeline Overview
 
 ### Security Scan Job
-- **Checkov** — static analysis of Terraform configuration against AWS security best practices
-- **Trivy** — vulnerability scanning of the Docker image for CRITICAL CVEs
-- **OPA/Conftest** — custom policy enforcement (blocks open ingress rules)
+- **Checkov** static analysis of Terraform configuration against AWS security best practices
+- **Trivy** vulnerability scanning of the Docker image for CRITICAL CVEs
+- **OPA/Conftest** custom policy enforcement (blocks open ingress rules)
 
-The deploy job will not run if any security scan fails.
+The deploy job stops if any security scan fails.
 
 ### Deploy Job
 - Configures AWS credentials via GitHub Secrets
