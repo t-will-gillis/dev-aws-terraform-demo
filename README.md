@@ -46,7 +46,7 @@ A minimal Flask app (`app/app.py`) served on port 8080. The EC2 instance clones 
 
 ## Security Posture
 
-- No hardcoded credentials anywhere — all sensitive values are GitHub Secrets passed as environment variables
+- No hardcoded credentials- all sensitive values stored as GitHub Secrets and passed as environment variables
 - Ingress restricted to a single known IP via `local_source_ip` variable
 - IMDSv2 enforced on the EC2 instance (blocks SSRF attacks against instance metadata)
 - Root volume encrypted at rest
@@ -59,10 +59,10 @@ A minimal Flask app (`app/app.py`) served on port 8080. The EC2 instance clones 
 ```
 ├── .github/
 │   └── workflows/
-│       ├── pipeline.yml       # Main CI/CD pipeline
-│       └── teardown.yml       # Infrastructure teardown
+│       ├── pipeline.yml          # Main CI/CD pipeline
+│       └── teardown.yml          # Infrastructure teardown
 ├── app/
-│   ├── app.py                 # Flask application
+│   ├── app.py                    # Flask application
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── infra/
@@ -73,7 +73,7 @@ A minimal Flask app (`app/app.py`) served on port 8080. The EC2 instance clones 
 │       └── .terraform.lock.hcl
 └── security/
     └── policies/
-        └── deny-open-sg.rego  # OPA policy
+        └── deny-open-sg.rego      # OPA policy
 ```
 
 ## Required GitHub Secrets
@@ -82,7 +82,7 @@ A minimal Flask app (`app/app.py`) served on port 8080. The EC2 instance clones 
 |--------|-------------|
 | `AWS_ACCESS_KEY_ID` | IAM user access key |
 | `AWS_SECRET_ACCESS_KEY` | IAM user secret key |
-| `LOCAL_SOURCE_IP` | Your IP in CIDR notation (e.g. `1.2.3.4/32`) |
+| `LOCAL_SOURCE_IP` | Local IP in CIDR notation (e.g. `1.2.3.4/32`) |
 
 ## Prerequisites
 
