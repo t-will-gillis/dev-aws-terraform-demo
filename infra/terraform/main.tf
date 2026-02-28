@@ -7,6 +7,12 @@ terraform {
       version = "~> 5.0"
     }
   }
+
+  backend "s3" {
+    bucket = "github-terraform-demo-state-160885284971"
+    key    = "terraform.tfstate"
+    region = "us-west-2"
+  }
 }
 
 provider "aws" {
