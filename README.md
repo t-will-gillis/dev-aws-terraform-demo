@@ -10,7 +10,7 @@ On every push to `master` (or manual trigger), the pipeline:
 2. **Provisions AWS infrastructure** via Terraform if all scans pass
 3. **Deploys a Flask application** to the provisioned EC2 instance
 
-A separate teardown workflow destroys all infrastructure on demand.
+There is a separate teardown workflow to remove all AWS infrastructure on demand for cost control.
 
 ## Pipeline Overview
 
