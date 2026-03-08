@@ -1,5 +1,7 @@
 # AWS Terraform Demo / CI/CD Pipeline
 
+![aws diagram](github-aws-arch_3-8-vert.drawio.png)  
+
 A demonstration project that provisions and deploys a Flask web app to AWS using Terraform, automated through a GitHub Actions CI/CD pipeline with integrated security scanning.
 
 ## What It Does
